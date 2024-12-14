@@ -11,7 +11,9 @@ Wait, ANOTHER tool to take code files and turn them into a single prompt file fo
 6. [1filellm](https://github.com/jimmc414/1filellm)
 7. [repo2file](https://github.com/artkulak/repo2file)
 
-… and others keep cropping up. Yet, **Your Source to Prompt** stands out with a unique set of capabilities that address many pain points these existing tools don’t fully resolve. In fact, I made it for myself to scratch my own itch, because I was wasting so much time using other tools that caused me to repeat myself over and over or which made it difficult to work with private repos.
+… and others keep cropping up. Yet, **Your Source to Prompt** stands out with a unique set of capabilities that address many pain points these existing tools don’t fully resolve.
+
+In fact, I made it for myself to scratch my own itch, because I was wasting so much time using other tools that caused me to repeat myself over and over or which made it difficult to work with private repos.
 
 ## Screenshots of it in Action (Click to see larger versions):
 |                               |                               |
