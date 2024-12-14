@@ -1,4 +1,3 @@
-```markdown
 # Your Source to Prompt (Securely, On Your OWN Machine!)
 
 Wait, ANOTHER tool to take code files and turn them into a single prompt file for Large Language Models? How many tools like this does the world need?! There are already so many:
@@ -174,4 +173,3 @@ For best results, use a Chromium-based browser like Chrome. This ensures full su
 ## Conclusion
 
 **Your Source to Prompt** may be one of many such tools, but it offers a unique combination of local operation, no-install convenience, powerful preset management, efficient file selection, minification, and thoughtful UI enhancements. It lets you quickly and securely create a well-structured prompt context for your LLM, making your AI-driven coding sessions more streamlined and effective.
-```
