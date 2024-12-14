@@ -184,3 +184,5 @@ For best results, use a Chromium-based browser like Chrome. This ensures full su
 ## Conclusion
 
 **Your Source to Prompt** may be one of many such tools, but it offers a unique combination of local operation, no-install convenience, powerful preset management, efficient file selection, minification, and thoughtful UI enhancements. It lets you quickly and securely create a well-structured prompt context for your LLM, making your AI-driven coding sessions more streamlined and effective.
+
+License: MIT License Applies 
