@@ -1,5 +1,6 @@
 # Your Source to Prompt (Securely, On Your OWN Machine!)
 
+
 Wait, ANOTHER tool to take code files and turn them into a single prompt file for Large Language Models? How many tools like this does the world need?! There are already so many:
 
 1. [files-to-prompt](https://github.com/simonw/files-to-prompt)
@@ -10,7 +11,13 @@ Wait, ANOTHER tool to take code files and turn them into a single prompt file fo
 6. [1filellm](https://github.com/jimmc414/1filellm)
 7. [repo2file](https://github.com/artkulak/repo2file)
 
-… and others keep cropping up. Yet, **Your Source to Prompt** stands out with a unique set of capabilities that address many pain points these existing tools don’t fully resolve.
+… and others keep cropping up. Yet, **Your Source to Prompt** stands out with a unique set of capabilities that address many pain points these existing tools don’t fully resolve. In fact, I made it for myself to scratch my own itch, because I was wasting so much time using other tools that caused me to repeat myself over and over or which made it difficult to work with private repos.
+
+## Screenshots of it in Action (Click to see larger versions):
+|                               |                               |
+|-------------------------------|-------------------------------|
+| *Choose files visually:* ![Screenshot 1](https://raw.githubusercontent.com/Dicklesworthstone/your-source-to-prompt.html/refs/heads/main/screenshots/screenshot_1.png) | *String filters and quick select options:* ![Screenshot 2](https://raw.githubusercontent.com/Dicklesworthstone/your-source-to-prompt.html/refs/heads/main/screenshots/screenshot_2.png) |
+| *Add preamble text and goals; save and load presets:* ![Screenshot 3](https://raw.githubusercontent.com/Dicklesworthstone/your-source-to-prompt.html/refs/heads/main/screenshots/screenshot_3.png) | *Easily save the final output text as a file or copy to clipboard:* ![Screenshot 4](https://raw.githubusercontent.com/Dicklesworthstone/your-source-to-prompt.html/refs/heads/main/screenshots/screenshot_4.png) |
 
 ---
 
@@ -19,7 +26,7 @@ Wait, ANOTHER tool to take code files and turn them into a single prompt file fo
 **Your Source to Prompt** is a single `.html` file that, when opened in a modern browser (like Chrome), provides a complete GUI to easily select code files and combine them into a single text output. The key innovation is that it runs entirely in your browser, with no external dependencies or services. It’s:
 
 - **Local and Secure**: Your code never leaves your machine.
-- **No Installation Hassles**: No Python, no Node.js, no CLI fiddling.
+- **No Installation Hassles**: No Python, no Node.js, no CLI fiddling. Just a single, self-contained HTML file that you open in any modern browser and then it "just works."
 - **Works with Any Folder**: Not limited to Git repos.
 - **Optimized for Repeated Use**: Save and load presets of file selections and settings.
 
@@ -29,7 +36,7 @@ This tool is all about letting you focus on your actual LLM-driven coding tasks 
 
 ## Key Advantages
 
-1. **Fully Local & Secure**: Just open the `.html` file. The modern File System Access API lets you read from your local drive directly. No server, no tokens, no privacy concerns.
+1. **Fully Local & Secure**: Just open the `.html` file. The modern File System Access API lets you read from your local drive directly. No server, no GitHub auth tokens, no privacy concerns.
 
 2. **No Dependencies**: Requires only a recent Chromium-based browser. No installations, no package managers.
 
@@ -50,7 +57,9 @@ This tool is all about letting you focus on your actual LLM-driven coding tasks 
 
 9. **Custom Preamble & Goal**: Prepend your combined output with a preamble and a stated goal so the LLM understands the context and your intentions before reading the code.
 
-10. **Export/Import Presets**: Share or backup your presets easily.
+10. **Export/Import Presets**: Share or backup your presets easily so you don't need to waste time selecting the same complex grouping of files over and over again!
+
+11. **User Friendly UI with Dark Mode**: It looks nice and is easy to get started, with comprehensive tooltips explaining what everything does.
 
 ---
 
@@ -69,17 +78,6 @@ This tool is all about letting you focus on your actual LLM-driven coding tasks 
 - Files are displayed in a nested tree structure.
 - Text files (based on known extensions) get checkboxes, so you can select which ones to include in the final prompt.
 
-### Minification Steps
-
-- Uses client-side libraries:
-  - **Terser** for JS/TS minification.
-  - **csso** for CSS.
-  - **html-minifier-terser** for HTML.
-  - JSON is re-serialized to a single line.
-  - Other text files have trailing whitespace trimmed.
-  
-This process helps fit larger codebases into the LLM’s context window.
-
 ### Preset Management
 
 - Selections and configurations are stored in `localStorage` as JSON.
@@ -97,11 +95,22 @@ This process helps fit larger codebases into the LLM’s context window.
 - Goal: A concise statement of what you want to achieve.
 - These help frame the LLM prompt so that the code is contextualized and not just dropped in cold.
 
+### Minification Steps
+
+- Uses client-side libraries:
+  - **Terser** for JS/TS minification.
+  - **csso** for CSS.
+  - **html-minifier-terser** for HTML.
+  - JSON is re-serialized to a single line.
+  - Other text files have trailing whitespace trimmed.
+  
+This process helps fit larger codebases into the LLM’s context window, and it tells you the space savings so you can decide if it's worth it.
+
 ---
 
 ## How to Use the Tool Step-by-Step
 
-1. **Get the HTML File**: Download `your-source-to-prompt.html` from this repository.
+1. **Get the HTML File**: Download `your-source-to-prompt.html` from this repository to your computer.
 
 2. **Open it in Chrome**:  
    Just double-click or drag it into your browser.
