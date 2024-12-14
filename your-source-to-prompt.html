@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,7 +51,6 @@
         .action-button:hover {
             filter: brightness(90%);
         }
-
         .tally-container {
             position: fixed;
             top: 1rem;
@@ -80,13 +79,11 @@
             margin-top: 0.25rem;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
-
         .tally-number {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-weight: 500;
             color: #000;
         }
-        
         .combine-button-container {
             position: sticky;
             bottom: 2rem;
@@ -97,7 +94,6 @@
             z-index: 999;
             pointer-events: none;
         }
-
         .combine-button {
             pointer-events: auto;
             background: linear-gradient(45deg, #22c55e, #16a34a);
@@ -111,12 +107,10 @@
             animation: pulse 2s infinite;
             transition: all 0.3s ease;
         }
-
         .combine-button:hover {
             transform: scale(1.15);
             box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
         }
-
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
@@ -128,7 +122,6 @@
                 box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
             }
         }
-    
         .search-container {
             display: flex;
             align-items: center;
@@ -157,7 +150,6 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .dropdown {
             position: relative;
             display: inline-block;
@@ -189,10 +181,112 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
+        /* Dark mode styles */
+        html.dark {
+            background-color: #1e1e1e;
+            color: #e5e5e5;
+        }
+        html.dark body {
+            background-color: #1e1e1e;
+            color: #e5e5e5;
+        }
+        html.dark .bg-gray-100 {
+            background-color: #1e1e1e !important;
+        }
+        html.dark .bg-white {
+            background-color: #2e2e2e !important;
+        }
+        html.dark .text-black {
+            color: #ffffff !important;
+        }
+        html.dark .text-gray-800 {
+            color: #cccccc !important;
+        }
+        html.dark .text-gray-400 {
+            color: #888888 !important;
+        }
+        html.dark .text-gray-600 {
+            color: #aaaaaa !important;
+        }
+        html.dark .text-gray-700 {
+            color: #bbbbbb !important;
+        }
+        html.dark .bg-gray-300 {
+            background-color: #444444 !important;
+        }
+        html.dark .bg-gray-50 {
+            background-color: #333333 !important;
+        }
+        html.dark .border-gray-300 {
+            border-color: #555555 !important;
+        }
+        html.dark .border-gray-100 {
+            border-color: #444444 !important;
+        }
+        html.dark .tally-container {
+            background: rgba(30,30,30,0.9);
+        }
+        html.dark .text-red-700 {
+            color: #ffaaaa !important;
+        }
+        html.dark .bg-red-100 {
+            background: #3e1e1e !important;
+        }
+        html.dark .bg-green-100 {
+            background: #1e3e1e !important;
+        }
+        html.dark .bg-yellow-100 {
+            background: #3e3e1e !important;
+        }
+        html.dark .text-yellow-800 {
+            color: #ffffaa !important;
+        }
+        html.dark input,
+        html.dark select,
+        html.dark textarea {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5 !important;
+            border-color: #555555 !important;
+        }
+
+        /* Folder names lighter blue in dark mode */
+        html.dark .folder-name {
+            color: #90caf9 !important;
+        }
+
+        /* Invert tally number colors in dark mode */
+        html.dark .transition-number {
+            color: #e5e5e5 !important;
+        }
+        html.dark .tally-number {
+            color: #e5e5e5 !important;
+        }
+
+        /* Dark mode toggle button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 10000;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        html.dark .dark-mode-toggle {
+            background: rgba(30,30,30,0.9);
+        }
     </style>
 </head>
-<body class="bg-gray-100 p-8" >
-    <div id="globalMessage" class="message-container hidden" ></div>
+<body class="bg-gray-100 p-8">
+    <div class="dark-mode-toggle" id="darkModeToggle"><i class="fas fa-sun"></i></div>
+    <div id="globalMessage" class="message-container hidden"></div>
     <div class="tally-container">
         <div data-tippy-content="Displays the total combined size of all currently selected text files.">
             <span>Total size:</span>
@@ -205,14 +299,14 @@
         <div id="tallyWarning" class="tally-message" data-tippy-content="This message warns if your selection might be too large for certain model context windows."></div>
     </div>
 
-    <div class="max-w-7xl mx-auto" >
-        <h1 class="text-3xl font-bold mb-6 flex items-center gap-2 mr-64" >
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 flex items-center gap-2 mr-64">
             <i class="fas fa-folder-open text-blue-600"></i>
             Your Source to Prompt (Securely, On Your OWN Machine!)
         </h1>
         
-        <div class="bg-white rounded-lg shadow p-6 space-y-6 animate__animated animate__fadeIn" >
-            <div class="flex items-center gap-4" >
+        <div class="bg-white rounded-lg shadow p-6 space-y-6 animate__animated animate__fadeIn">
+            <div class="flex items-center gap-4">
                 <button id="folderBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2" data-tippy-content="Click to choose the root folder on your machine.">
                     <i class="fas fa-folder-plus"></i>
                     Select Folder
@@ -221,7 +315,7 @@
             </div>
             <div class="text-gray-600 italic" id="gitignoreStatus" data-tippy-content="Indicates whether a .gitignore or default ignores are applied to filter out certain files."></div>
             
-            <div id="loadingIndicator" class="hidden" >
+            <div id="loadingIndicator" class="hidden">
                 <div class="flex items-center gap-3 text-blue-600 mb-4">
                     <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" >
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -232,142 +326,138 @@
             </div>
 
             <div class="search-container">
-                <input type="text" id="filterInput" placeholder="Filter by file/folder name..." class="border p-2 rounded flex-grow" data-tippy-content="Type text to filter the file tree. Example: type 'test' to show only files containing 'test' in their name.">
-                <button id="clearFilterBtn" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 flex items-center gap-2" data-tippy-content="Clear the current filter and show all files.">
+                <input type="text" id="filterInput" placeholder="Filter by file/folder name..." class="border p-2 rounded flex-grow">
+                <button id="clearFilterBtn" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 flex items-center gap-2">
                     Clear Filter
                 </button>
             </div>
             
-            <div id="fileTree" class="mb-4 max-h-96 overflow-y-auto font-mono text-sm bg-gray-50 p-4 rounded fileTree animate__animated animate__fadeIn" data-tippy-content="Hierarchical view of your folder’s content. Check the boxes next to files you want to combine."></div>
+            <div id="fileTree" class="mb-4 max-h-96 overflow-y-auto font-mono text-sm bg-gray-50 p-4 rounded fileTree animate__animated animate__fadeIn"></div>
             
             <div class="flex flex-wrap gap-4">
-                <button id="selectAllBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2" data-tippy-content="Toggle select/deselect all visible text files. This helps quickly manage large sets.">
+                <button id="selectAllBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2">
                     <i class="fas fa-check-double"></i>
                     Toggle Select All Text Files
                 </button>
             </div>
 
             <div class="flex flex-wrap gap-4 mt-4 items-center">
-                <h2 class="text-lg font-semibold flex items-center gap-2" data-tippy-content="Common filters for typical developer file types to speed up selection.">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
                     <i class="fas fa-filter text-yellow-500"></i>
                     File Type Filters
                 </h2>
 
-                <div class="dropdown" data-tippy-content="Hover to open a dropdown of file type filters. Select one to quickly include all files of that type.">
-                    <button class="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 flex items-center gap-2" data-tippy-content="Click or hover to see file type filter options.">
+                <div class="dropdown">
+                    <button class="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 flex items-center gap-2" >
                         <i class="fas fa-caret-down"></i>
                         Show Filters
                     </button>
-                    <div class="dropdown-content" data-tippy-content="Click a filter to select all files of that type.">
-                        <button data-filter-type="js" data-tippy-content="Select all JavaScript files (.js, .mjs, .cjs).">Select all JavaScript files</button>
-                        <button data-filter-type="react" data-tippy-content="Select all React component files (.jsx, .tsx).">Select all React Components</button>
-                        <button data-filter-type="ts" data-tippy-content="Select all TypeScript files (.ts, .tsx).">Select all TypeScript files</button>
-                        <button data-filter-type="json" data-tippy-content="Select all JSON files (.json).">Select all JSON files</button>
-                        <button data-filter-type="md" data-tippy-content="Select all Markdown files (.md).">Select all Markdown files</button>
-                        <button data-filter-type="py" data-tippy-content="Select all Python files (.py).">Select all Python files</button>
-                        <button data-filter-type="go" data-tippy-content="Select all Go files (.go).">Select all Go files</button>
-                        <button data-filter-type="java" data-tippy-content="Select all Java files (.java).">Select all Java files</button>
-                        <button data-filter-type="rb" data-tippy-content="Select all Ruby files (.rb).">Select all Ruby files</button>
-                        <button data-filter-type="php" data-tippy-content="Select all PHP files (.php).">Select all PHP files</button>
-                        <button data-filter-type="rs" data-tippy-content="Select all Rust files (.rs).">Select all Rust files</button>
+                    <div class="dropdown-content">
+                        <button data-filter-type="js">Select all JavaScript files</button>
+                        <button data-filter-type="react">Select all React Components</button>
+                        <button data-filter-type="ts">Select all TypeScript files</button>
+                        <button data-filter-type="json">Select all JSON files</button>
+                        <button data-filter-type="md">Select all Markdown files</button>
+                        <button data-filter-type="py">Select all Python files</button>
+                        <button data-filter-type="go">Select all Go files</button>
+                        <button data-filter-type="java">Select all Java files</button>
+                        <button data-filter-type="rb">Select all Ruby files</button>
+                        <button data-filter-type="php">Select all PHP files</button>
+                        <button data-filter-type="rs">Select all Rust files</button>
                     </div>
                 </div>
 
-                <button id="clearFilterSelectionsBtn" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" data-tippy-content="Remove all selections made by file-type filters, but keep your manual selections.">
+                <button id="clearFilterSelectionsBtn" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
                     Clear Filter-Based Selections
                 </button>
             </div>
 
-            <div class="combine-button-container" >
-                <button id="combineBtn" class="combine-button flex items-center gap-2 mx-auto" data-tippy-content="Create a combined output file from all your currently selected files.">
+            <div class="combine-button-container">
+                <button id="combineBtn" class="combine-button flex items-center gap-2 mx-auto">
                     <i class="fas fa-file-medical"></i>
                     Combine Selected Files
                 </button>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn" >
-                <h2 class="text-lg font-semibold flex items-center gap-2" >
+            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
                     <i class="fas fa-info-circle text-blue-500"></i>
                     Additional Options
                 </h2>
                 
                 <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="includePreamble" >
-                        <label for="includePreamble" class="font-semibold" data-tippy-content="The preamble is a starting note or introduction added before the combined files.">Include Preamble</label>
+                        <input type="checkbox" id="includePreamble">
+                        <label for="includePreamble" class="font-semibold">Include Preamble</label>
                     </div>
-                    <div id="preambleOptions" class="space-y-2 hidden" data-tippy-content="Adjust the preamble text. Choose a predefined one or write your own.">
-                        <select id="preambleSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" data-tippy-content="Select a preamble template or choose 'custom' to write your own.">
+                    <div id="preambleOptions" class="space-y-2 hidden">
+                        <select id="preambleSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="custom">Custom</option>
                             <option value="The following are the complete project code files for my NextJS 15 app.">The following are the complete project code files for my NextJS 15 app.</option>
                             <option value="Below is a comprehensive collection of the project's source files.">Below is a comprehensive collection of the project's source files.</option>
                         </select>
-                        <textarea id="customPreamble" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 min-h-[5rem]" placeholder="Write your preamble here..." data-tippy-content="Type a custom preamble here if 'custom' is selected above."></textarea>
+                        <textarea id="customPreamble" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 min-h-[5rem]" placeholder="Write your preamble here..."></textarea>
                     </div>
                 </div>
                 
-                <div class="space-y-2" >
+                <div class="space-y-2">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="includeGoal" data-tippy-content="Check to include a goal statement in the combined output.">
-                        <label for="includeGoal" class="font-semibold" data-tippy-content="The goal describes what you want to accomplish or highlight in these files.">Include Goal</label>
+                        <input type="checkbox" id="includeGoal">
+                        <label for="includeGoal" class="font-semibold">Include Goal</label>
                     </div>
-                    <div id="goalOptions" class="hidden" data-tippy-content="Type your goal or objective here.">
-                        <textarea id="goalText" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 min-h-[5rem]" placeholder="Describe your goal here..." data-tippy-content="Write a detailed goal or purpose that the combined output should serve."></textarea>
+                    <div id="goalOptions" class="hidden">
+                        <textarea id="goalText" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 min-h-[5rem]" placeholder="Describe your goal here..."></textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn" >
-                <h2 class="text-lg font-semibold flex items-center gap-2" >
+            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
                     <i class="fas fa-compress text-green-500"></i>
                     Minify/Compress Options
                 </h2>
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" id="minifyOutput" data-tippy-content="Check this to attempt minifying code files (e.g. JavaScript, CSS, HTML) in the combined output.">
-                    <label for="minifyOutput" class="font-semibold" data-tippy-content="Minify reduces file size by removing unnecessary whitespace and comments.">Minify Combined Output</label>
+                    <input type="checkbox" id="minifyOutput">
+                    <label for="minifyOutput" class="font-semibold">Minify Combined Output</label>
                 </div>
-                <div id="minifyStats" class="text-sm text-gray-700 hidden" data-tippy-content="Statistics about how much size and lines were saved after minification."></div>
+                <div id="minifyStats" class="text-sm text-gray-700 hidden"></div>
             </div>
 
-            <div class="border-t pt-4 space-y-4" >
-                <h2 class="text-lg font-semibold flex items-center gap-2" >
+            <div class="border-t pt-4 space-y-4">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
                     <i class="fas fa-save text-purple-500"></i>
                     Presets
                 </h2>
-                <div id="folderWarning" class="bg-yellow-100 text-yellow-800 p-4 rounded-lg mb-4" >
+                <div id="folderWarning" class="bg-yellow-100 text-yellow-800 p-4 rounded-lg mb-4">
                     <i class="fas fa-exclamation-triangle mr-2"></i>
                     Please select a folder first to use presets.
                 </div>
-                <p class="text-sm text-gray-600" data-tippy-content="Presets store the currently selected files and option states. Later, load them instead of manually re-selecting.">
+                <p class="text-sm text-gray-600">
                     Use presets to store and reload sets of selected files and options.
                 </p>
                 
-                <div id="presetMessage" class="hidden rounded-lg p-4 mb-4 text-sm" data-tippy-content="Messages about saving, loading, or deleting presets will appear here."></div>
+                <div id="presetMessage" class="hidden rounded-lg p-4 mb-4 text-sm"></div>
                 
                 <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
                     <input type="text" id="presetName" placeholder="Enter preset name"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
-                    data-tippy-content="Name your preset. Example: 'ReactComponentsSelection' or 'BackendSet'.">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
                     <button id="savePresetBtn"
-                            class="action-button bg-purple-500 text-white px-4 py-2 rounded"
-                            data-tippy-content="Click to save the current selection and options as a named preset.">
+                            class="action-button bg-purple-500 text-white px-4 py-2 rounded">
                         <i class="fas fa-bookmark"></i>
                         Save Preset
                     </button>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4" >
-                    <select id="presetSelect" class="border p-2 rounded w-full sm:w-1/2" data-tippy-content="Select a previously saved preset to load or delete.">
+                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+                    <select id="presetSelect" class="border p-2 rounded w-full sm:w-1/2">
                         <option value="">Select a preset</option>
                     </select>
                     <button id="loadPresetBtn" 
-                            class="action-button bg-purple-500 text-white px-4 py-2 rounded"
-                            data-tippy-content="Load the chosen preset’s selections and options.">
+                            class="action-button bg-purple-500 text-white px-4 py-2 rounded">
                         <i class="fas fa-folder-open"></i>
                         Load Preset
                     </button>
                     <button id="deletePresetBtn"
-                            class="action-button bg-red-500 text-white px-4 py-2 rounded"
-                            data-tippy-content="Delete the currently selected preset from storage.">
+                            class="action-button bg-red-500 text-white px-4 py-2 rounded">
                         <i class="fas fa-trash"></i>
                         Delete Preset
                     </button>
@@ -375,34 +465,33 @@
 
                 <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
                     <button id="exportPresetsBtn"
-                            class="action-button bg-yellow-500 text-white px-4 py-2 rounded"
-                            data-tippy-content="Download all saved presets as a JSON file for backup or sharing.">
+                            class="action-button bg-yellow-500 text-white px-4 py-2 rounded">
                         <i class="fas fa-download"></i>
                         Save Presets to JSON File
                     </button>
-                    <label class="action-button bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer" for="importPresetsInput" data-tippy-content="Load previously saved presets from a JSON file.">
+                    <label class="action-button bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer" for="importPresetsInput">
                         <i class="fas fa-upload"></i>
                         Load Presets from JSON File
-                        <input type="file" id="importPresetsInput" class="hidden" accept=".json" data-tippy-content="Choose a JSON file containing saved presets.">
+                        <input type="file" id="importPresetsInput" class="hidden" accept=".json">
                     </label>
                 </div>
                 
-                <div id="missingFilesAlert" class="hidden text-red-600 text-sm" data-tippy-content="If some preset files can’t be found in the currently selected folder, a warning appears here."></div>
+                <div id="missingFilesAlert" class="hidden text-red-600 text-sm"></div>
             </div>
         </div>
 
-        <div id="output" class="bg-white rounded-lg shadow p-6 hidden space-y-4 animate__animated animate__fadeIn" data-tippy-content="Once files are combined, the result is shown here. You can copy or download it.">
-            <h2 class="text-xl font-bold flex items-center gap-2" data-tippy-content="This section displays your final combined output file text.">
+        <div id="output" class="bg-white rounded-lg shadow p-6 hidden space-y-4 animate__animated animate__fadeIn">
+            <h2 class="text-xl font-bold flex items-center gap-2">
                 <i class="fas fa-file-alt text-green-500"></i>
                 Combined Output
             </h2>
-            <textarea id="combinedOutput" class="w-full h-96 p-2 border rounded font-mono text-sm" readonly data-tippy-content="The combined output text is shown here. Review it, then copy or download as needed."></textarea>
-            <div class="flex gap-4" data-tippy-content="You can download the combined file as a text file or copy it directly to clipboard.">
-                <button id="downloadBtn" class="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 flex items-center gap-2" data-tippy-content="Download the combined output as a text file.">
+            <textarea id="combinedOutput" class="w-full h-96 p-2 border rounded font-mono text-sm" readonly></textarea>
+            <div class="flex gap-4">
+                <button id="downloadBtn" class="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 flex items-center gap-2">
                     <i class="fas fa-download"></i>
                     Download Combined File
                 </button>
-                <button id="copyBtn" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2" data-tippy-content="Copy the entire combined output to your clipboard for easy pasting into other tools.">
+                <button id="copyBtn" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2">
                     <i class="fas fa-copy"></i>
                     Copy Combined Text to Clipboard
                 </button>
@@ -415,6 +504,11 @@
     <script src="https://cdn.jsdelivr.net/npm/terser@5.14.2/dist/bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-minifier-terser@7.0.0/dist/html-minifier-terser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/csso@5.0.5/dist/csso.min.js"></script>
+    <script>
+        // Make dark mode the default
+        localStorage.setItem('darkModeEnabled', 'true');
+        document.documentElement.classList.add('dark');
+    </script>
     <script>
         tippy('[data-tippy-content]', {
             theme: 'light-border',
@@ -489,6 +583,13 @@
 
         const minifyOutput = document.getElementById('minifyOutput');
         const minifyStats = document.getElementById('minifyStats');
+
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkModeEnabled', isDark ? 'true' : 'false');
+            darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
 
         let fileHandles = [];
         let folderHandle = null;
@@ -619,17 +720,15 @@
 
                 if (entry.kind === 'directory') {
                     const folderDiv = document.createElement('div');
-                    folderDiv.className = 'font-bold mb-1 text-blue-700 flex items-center gap-2';
+                    folderDiv.className = 'font-bold mb-1 folder-name flex items-center gap-2';
                     const folderCheckbox = document.createElement('input');
                     folderCheckbox.type = 'checkbox';
                     folderCheckbox.className = 'mr-2';
                     folderCheckbox.dataset.path = entryPath;
                     folderCheckbox.dataset.type = 'directory';
-                    folderCheckbox.setAttribute('data-tippy-content', 'Check/uncheck to select/deselect all files within this folder.');
                     folderDiv.appendChild(folderCheckbox);
                     const folderLabel = document.createElement('span');
                     folderLabel.textContent = `📁 ${entry.name}`;
-                    folderLabel.setAttribute('data-tippy-content', 'This is a folder in your project. Expand it by checking/unchecking its contents if desired.');
                     folderDiv.appendChild(folderLabel);
                     div.appendChild(folderDiv);
 
@@ -652,17 +751,14 @@
                         checkbox.className = 'mr-2';
                         checkbox.dataset.path = entryPath;
                         checkbox.dataset.type = 'file';
-                        checkbox.setAttribute('data-tippy-content', 'Check this file to include it in the combined output.');
                         fileDiv.appendChild(checkbox);
                     }
                     const label = document.createElement('span');
                     label.className = isText ? 'text-gray-800' : 'text-gray-400';
                     if (isText) {
                         label.textContent = `📄 ${entry.name} (${(size / 1024).toFixed(2)} KB | ${lines.toLocaleString()} lines)`;
-                        label.setAttribute('data-tippy-content', 'A text file that can be included in your combined output. Shows file size and line count.');
                     } else {
                         label.textContent = `📄 ${entry.name} (non-text file)`;
-                        label.setAttribute('data-tippy-content', 'This is a non-text file. It cannot be included in the combined text output.');
                     }
                     fileDiv.appendChild(label);
                     div.appendChild(fileDiv);
