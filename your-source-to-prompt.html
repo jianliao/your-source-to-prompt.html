@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -382,7 +381,7 @@
                 </button>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn">
+            <div class="bg-white rounded-lg shadow p-2 space-y-2 animate__animated animate__fadeIn">
                 <h2 class="text-lg font-semibold flex items-center gap-2" >
                     <i class="fas fa-info-circle text-blue-500"></i>
                     Additional Options
@@ -414,7 +413,19 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 space-y-4 animate__animated animate__fadeIn" >
+            <div class="bg-white rounded-lg shadow p-2 space-y-2 animate__animated animate__fadeIn">
+                <h2 class="text-lg font-semibold flex items-center gap-2" >
+                    <i class="fas fa-scissors text-red-500"></i>
+                    Remove Code Comments
+                </h2>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="removeComments" data-tippy-content="Check to remove code comments from supported file types to save space.">
+                    <label for="removeComments" class="font-semibold" data-tippy-content="Removing comments can help save space in the model's context window.">Remove Code Comments</label>
+                </div>
+                <div id="commentStats" class="text-sm text-gray-700 hidden" data-tippy-content="Shows how much size and lines are saved after removing comments."></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-2 space-y-2 animate__animated animate__fadeIn" >
                 <h2 class="text-lg font-semibold flex items-center gap-2" >
                     <i class="fas fa-compress text-green-500"></i>
                     Minify/Compress Options
@@ -527,25 +538,102 @@
     <script>
         class GitIgnore {
             constructor(patterns) {
-                this.patterns = patterns
-                    .split('\n')
+                this.patterns = [];
+                
+                // Split into lines and process each pattern
+                patterns.split('\n')
                     .map(line => line.trim())
                     .filter(line => line && !line.startsWith('#'))
-                    .map(pattern => {
+                    .forEach(pattern => {
+                        // Handle negation patterns (patterns starting with !)
+                        const isNegation = pattern.startsWith('!');
+                        pattern = isNegation ? pattern.slice(1) : pattern;
+        
+                        // Remove trailing slashes
                         pattern = pattern.replace(/\/+$/, '');
-                        pattern = pattern
+        
+                        // Handle leading slashes
+                        const isAbsolute = pattern.startsWith('/');
+                        pattern = pattern.replace(/^\/+/, '');
+        
+                        // Convert glob patterns to RegExp
+                        let regexPattern = pattern
                             .replace(/\./g, '\\.')
-                            .replace(/\*/g, '.*')
-                            .replace(/\?/g, '.')
-                            .replace(/\//g, '\\/');
-                        return new RegExp(`(?:^|\\/)${pattern}(?:\\/|$)`);
+                            .replace(/\*\*/g, '{{GLOBSTAR}}') // Temporarily replace ** 
+                            .replace(/\*/g, '[^/]*')  // Single * matches anything except /
+                            .replace(/\?/g, '[^/]')   // ? matches single character except /
+                            .replace(/{{GLOBSTAR}}/g, '.*') // ** matches anything including /
+                            .replace(/\/$/, ''); // Remove trailing slash again just in case
+        
+                        // Create the complete regex pattern
+                        let fullPattern = isAbsolute ? 
+                            `^${regexPattern}(?:$|/)` : 
+                            `(?:^|/)${regexPattern}(?:$|/)`;
+        
+                        this.patterns.push({
+                            regex: new RegExp(fullPattern),
+                            isNegation,
+                            original: pattern
+                        });
                     });
+        
+                // Add default patterns
+                const defaultPatterns = [
+                    '^.git(?:$|/)',
+                    '^.husky(?:$|/)',
+                    '^.vscode(?:$|/)',
+                    '^node_modules(?:$|/)',
+                    '^\\.next(?:$|/)',
+                    '^out(?:$|/)',
+                    '^build(?:$|/)',
+                    '^coverage(?:$|/)',
+                    '\\.DS_Store$',
+                    '\\.env\\.*',
+                    '\\.pnp\\.*',
+                    '\\.yarn/*',
+                    '\\.vercel(?:$|/)',
+                    '\\.tsbuildinfo$',
+                    '^next-env\\.d\\.ts$'
+                ];
+        
+                defaultPatterns.forEach(pattern => {
+                    this.patterns.push({
+                        regex: new RegExp(pattern),
+                        isNegation: false,
+                        original: pattern
+                    });
+                });
             }
+        
             ignores(path) {
-                if (path === '.git' || path.startsWith('.git/') || path.startsWith('.husky') || path.startsWith('.vscode')) {
-                    return true;
+                // Normalize path
+                path = path.replace(/^\/+/, '').replace(/\/+$/, '');
+                
+                let ignored = false;
+                
+                // Check all patterns in order
+                for (const pattern of this.patterns) {
+                    if (pattern.regex.test(path)) {
+                        ignored = !pattern.isNegation;
+                    }
                 }
-                return this.patterns.some(pattern => pattern.test(path));
+                
+                return ignored;
+            }
+        
+            // Helper method to debug patterns
+            debugPattern(path) {
+                const matches = [];
+                for (const pattern of this.patterns) {
+                    if (pattern.regex.test(path)) {
+                        matches.push({
+                            pattern: pattern.original,
+                            isNegation: pattern.isNegation,
+                            regex: pattern.regex.toString()
+                        });
+                    }
+                }
+                return matches;
             }
         }
 
@@ -591,6 +679,9 @@
 
         const minifyOutput = document.getElementById('minifyOutput');
         const minifyStats = document.getElementById('minifyStats');
+
+        const removeComments = document.getElementById('removeComments');
+        const commentStats = document.getElementById('commentStats');
 
         const darkModeToggle = document.getElementById('darkModeToggle');
         darkModeToggle.addEventListener('click', () => {
@@ -652,6 +743,7 @@
             clearFilterSelectionsBtn.disabled = isLoading;
             fileTypeFilterButtons.forEach(btn => btn.disabled = isLoading);
             minifyOutput.disabled = isLoading;
+            removeComments.disabled = isLoading;
         }
 
         function isTextFile(name) {
@@ -1068,6 +1160,51 @@
             }
         }
 
+        function removeCommentsFromCode(path, content) {
+            const ext = path.toLowerCase();
+            let lines = content.split('\n');
+            let result = lines.join('\n');
+            // Heuristics:
+            // JS/TS/TSX/JSX/C/C++/Java/Go/Rust/PHP/Ruby: remove // and /* */ style comments
+            // Python: remove # comments
+            // HTML: remove <!-- --> comments
+            // CSS: remove /* */ comments
+            // We'll do a generic approach based on extension:
+
+            // For block comments, remove them using a generic regex if applicable.
+            // For line comments, remove line by line.
+
+            // Common block comment regex: /\/\*[\s\S]*?\*\//g
+            // Common single-line comments: //.*$
+            // HTML comments: <!--[\s\S]*?-->
+            // Python/Ruby: ^\s*#.*
+
+            if (ext.endsWith('.js') || ext.endsWith('.jsx') || ext.endsWith('.ts') || ext.endsWith('.tsx') || ext.endsWith('.java') || ext.endsWith('.go') || ext.endsWith('.c') || ext.endsWith('.cpp') || ext.endsWith('.h') || ext.endsWith('.rs') || ext.endsWith('.php')) {
+                // Remove block comments
+                result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+                // Remove line comments
+                result = result.replace(/(^|\s)\/\/.*$/gm, '');
+            } else if (ext.endsWith('.py') || ext.endsWith('.rb')) {
+                // Python and Ruby style: lines starting with #
+                result = result.replace(/^\s*#.*$/gm, '');
+            } else if (ext.endsWith('.html') || ext.endsWith('.htm')) {
+                // HTML comments
+                result = result.replace(/<!--[\s\S]*?-->/g, '');
+            } else if (ext.endsWith('.css')) {
+                // CSS block comments
+                result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+            } else if (ext.endsWith('.jsx') || ext.endsWith('.tsx')) {
+                // Already handled above with JS pattern
+            }
+            // Trim trailing spaces from lines after removal
+            let processedLines = result.split('\n').map(l => l.trimEnd());
+            // Remove empty lines that may be left by comment removal
+            // We can choose not to remove empty lines or do so. The request doesn't specify removing empty lines, just comments.
+            // We'll leave empty lines as is to avoid altering code structure too much.
+
+            return processedLines.join('\n');
+        }
+
         combineBtn.addEventListener('click', async () => {
             const selectedPaths = Array.from(fileTree.querySelectorAll('input[type="checkbox"]:checked[data-type="file"]'))
                 .map(cb => cb.dataset.path);
@@ -1111,13 +1248,49 @@
                 }
 
                 let combinedContent = '';
+                let afterCommentTotalSize = 0;
+                let afterCommentTotalLines = 0;
+                let afterMinifyTotalSize = 0;
+                let afterMinifyTotalLines = 0;
+
+                // Remove comments first if checked
                 for (const f of selectedFiles) {
                     let fileContent = f.content.trim();
-                    if (minifyOutput.checked) {
-                        fileContent = await minifyContent(f.path, fileContent);
+                    if (removeComments.checked) {
+                        fileContent = removeCommentsFromCode(f.path, fileContent);
                     }
-                    combinedContent += `---\n${f.path}\n---\n${fileContent}\n\n`;
+                    const linesCount = fileContent.split('\n').length;
+                    const sizeCount = new Blob([fileContent]).size;
+                    afterCommentTotalSize += sizeCount;
+                    afterCommentTotalLines += linesCount;
                 }
+
+                let intermediateFiles = selectedFiles.map(f => {
+                    let fileContent = f.content.trim();
+                    if (removeComments.checked) {
+                        fileContent = removeCommentsFromCode(f.path, fileContent);
+                    }
+                    return { path: f.path, content: fileContent };
+                });
+
+                // Then minify if checked
+                if (minifyOutput.checked) {
+                    let tempFiles = [];
+                    for (const f of intermediateFiles) {
+                        let minContent = await minifyContent(f.path, f.content);
+                        tempFiles.push({ path: f.path, content: minContent });
+                    }
+                    intermediateFiles = tempFiles;
+                }
+
+                // After all transformations
+                for (const f of intermediateFiles) {
+                    combinedContent += `---\n${f.path}\n---\n${f.content}\n\n`;
+                }
+
+                // Compute final stats
+                const finalSize = new Blob([combinedContent]).size;
+                const finalLines = combinedContent.split('\n').length;
 
                 finalOutput += combinedContent.trim();
                 combinedOutput.value = finalOutput;
@@ -1125,18 +1298,28 @@
                 showGlobalMessage('Files combined successfully!', 'success');
                 output.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+                if (removeComments.checked) {
+                    const savedSize = ((originalTotalSize - afterCommentTotalSize) / 1024).toFixed(2);
+                    const sizePct = ((originalTotalSize - afterCommentTotalSize) / originalTotalSize * 100).toFixed(1);
+                    const savedLines = (originalTotalLines - afterCommentTotalLines);
+                    const linePct = (savedLines / originalTotalLines * 100).toFixed(1);
+                    commentStats.textContent = `Removing comments saved ${savedSize} KB (${sizePct}%) and ${savedLines} lines (${linePct}%)`;
+                    commentStats.classList.remove('hidden');
+                } else {
+                    commentStats.classList.add('hidden');
+                }
+
                 if (minifyOutput.checked) {
-                    const minifiedSize = new Blob([finalOutput]).size;
-                    const minifiedLines = finalOutput.split('\n').length;
-                    const sizeSaved = ((originalTotalSize - minifiedSize) / 1024).toFixed(2);
-                    const sizePct = ((originalTotalSize - minifiedSize)/originalTotalSize*100).toFixed(1);
-                    const lineSaved = (originalTotalLines - minifiedLines);
-                    const linePct = (lineSaved / originalTotalLines * 100).toFixed(1);
-                    minifyStats.textContent = `Minifying the outputs saved ${sizeSaved} KB (${sizePct}%) and ${lineSaved} lines (${linePct}%)`;
+                    const savedSize = ((afterCommentTotalSize - finalSize) / 1024).toFixed(2);
+                    const sizePct = ((afterCommentTotalSize - finalSize)/afterCommentTotalSize*100).toFixed(1);
+                    const savedLines = (afterCommentTotalLines - finalLines);
+                    const linePct = (savedLines / afterCommentTotalLines * 100).toFixed(1);
+                    minifyStats.textContent = `Minifying the outputs saved ${savedSize} KB (${sizePct}%) and ${savedLines} lines (${linePct}%)`;
                     minifyStats.classList.remove('hidden');
                 } else {
                     minifyStats.classList.add('hidden');
                 }
+
             } catch (error) {
                 showGlobalMessage('Error combining files: ' + error.message);
             } finally {
