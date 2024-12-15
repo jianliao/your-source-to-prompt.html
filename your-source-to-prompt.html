@@ -1199,9 +1199,6 @@
             // Trim trailing spaces from lines after removal
             let processedLines = result.split('\n').map(l => l.trimEnd());
             // Remove empty lines that may be left by comment removal
-            // We can choose not to remove empty lines or do so. The request doesn't specify removing empty lines, just comments.
-            // We'll leave empty lines as is to avoid altering code structure too much.
-
             return processedLines.join('\n');
         }
 
